@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ben's Bargains - Best Deals & Price Drops</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Roboto+Mono:wght@400;500&amp;display=swap');
+        
+        :root {
+            --primary: #0ea5e9;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .deal-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .deal-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        
+        .price {
+            font-family: 'Roboto Mono', monospace;
+            font-weight: 600;
+        }
+        
+        .nav-link {
+            transition: color 0.1s;
+        }
+        
+        .nav-link:hover {
+            color: #0ea5e9;
+        }
+        
+        .deal-score {
+            background: linear-gradient(90deg, #0ea5e9, #0284c8);
+        }
+        
+        .section-header {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+        
+        .bargain-badge {
+            background-color: #0ea5e9;
+            color: white;
+            font-size: 0.7rem;
+            padding: 1px 7px;
+            border-radius: 9999px;
+            font-weight: 700;
+        }
+        
+        .modal {
+            animation: modalPop 0.2s ease-out forwards;
+        }
+        
+        @keyframes modalPop {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .deal-row {
+            transition: background-color 0.1s;
+        }
+        
+        .deal-row:hover {
+            background-color: #f8fafc;
+        }
+        
+        .logo-font {
+            font-weight: 800;
+            letter-spacing: -0.05em;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+    <!-- Top Utility Bar -->
+    <div class="bg-slate-900 text-white text-xs py-1.5">
+        <div class="max-w-screen-xl mx-auto px-4 flex items-center justify-between">
+            <div class="flex items-center gap-x-4">
+                <div class="flex items-center gap-x-1.5">
+                    <i class="fas fa-check-circle text-emerald-400"></i>
+                    <span class="font-medium">Verified Deals</span>
+                </div>
+                <div>1,284 deals today</div>
+            </div>
+            <div class="hidden md:flex items-center gap-x-3 text-slate-300">
+                <div>Track 4.2m price drops</div>
+                <div class="w-px h-3 bg-slate-700"></div>
+                <a href="#" class="hover:text-white">Join Ben's Club</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-screen-xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center gap-x-3">
+                    <div class="flex items-center">
+                        <div class="w-9 h-9 bg-sky-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-black text-2xl tracking-tighter">B</span>
+                        </div>
+                        <div class="ml-2">
+                            <div class="logo-font text-2xl leading-none text-slate-900">Ben's</div>
+                            <div class="text-[10px] text-sky-600 -mt-1 font-bold tracking-[1px]">BARGAINS</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search -->
+                <div class="flex-1 max-w-xl mx-6">
+                    <div class="relative">
+                        <input id="search-input" 
+                               type="text" 
+                               placeholder="Search deals, stores, or products..." 
+                               class="w-full bg-slate-100 border border-slate-200 focus:border-sky-400 transition-colors pl-11 pr-4 py-2.5 rounded-2xl text-sm outline-none">
+                        <i class="fas fa-search absolute left-4 top-3.5 text-slate-400"></i>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-x-2">
+                    <!-- Submit Deal -->
+                    <button onclick="showSubmitModal()"
+                            class="hidden sm:flex items-center gap-x-2 px-4 py-2 text-sm font-semibold bg-white hover:bg-slate-50 border border-slate-300 rounded-2xl transition-colors">
+                        <i class="fas fa-plus text-sky-600"></i>
+                        <span class="font-semibold">Submit Deal</span>
+                    </button>
+                    
+                    <div class="flex items-center gap-x-1.5">
+                        <button class="px-4 py-2 text-sm font-semibold rounded-2xl bg-slate-900 text-white hover:bg-slate-800 transition-colors flex items-center gap-x-2">
+                            <i class="fas fa-user"></i>
+                            <span class="hidden md:inline">Sign in</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nav -->
+        <div class="border-t border-slate-100 bg-white">
+            <div class="max-w-screen-xl mx-auto px-4">
+                <div class="flex items-center h-11 text-sm">
+                    <div class="flex items-center gap-x-1 text-slate-600 font-medium">
+                        <a href="#" class="nav-link px-3 py-1.5 rounded-xl hover:bg-slate-100 flex items-center gap-x-1.5 text-sky-700 font-semibold">
+                            <i class="fas fa-fire"></i> 
+                            <span>Hot Deals</span>
+                        </a>
+                        <a href="#" class="nav-link px-3 py-1.5 rounded-xl hover:bg-slate-100">All Deals</a>
+                        <a href="#" class="nav-link px-3 py-1.5 rounded-xl hover:bg-slate-100">Stores</a>
+                        <a href="#" class="nav-link px-3 py-1.5 rounded-xl hover:bg-slate-100">Categories</a>
+                        <a href="#" class="nav-link px-3 py-1.5 rounded-xl hover:bg-slate-100 hidden md:inline">Price History</a>
+                    </div>
+                    
+                    <div class="ml-auto flex items-center gap-x-2 text-xs">
+                        <div class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center gap-x-1 font-semibold">
+                            <i class="fas fa-bolt"></i>
+                            <span>2,491 new today</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <div class="bg-gradient-to-r from-sky-700 to-slate-900 text-white">
+        <div class="max-w-screen-xl mx-auto px-4 py-6">
+            <div class="flex flex-col md:flex-row md:items-center gap-y-3 justify-between">
+                <div>
+                    <div class="uppercase tracking-[1.5px] text-sky-300 text-xs font-bold mb-1">TODAY'S TOP PICKS</div>
+                    <h1 class="text-3xl font-extrabold tracking-tighter">The best deals on the internet, handpicked by Ben.</h1>
+                    <p class="text-sky-200 mt-1 text-sm">Updated every 15 minutes • 14,892 deals tracked</p>
+                </div>
+                
+                <div class="flex items-center gap-x-4">
+                    <div class="bg-white/10 backdrop-blur px-5 py-2 rounded-3xl text-center">
+                        <div class="text-xs text-sky-300">Avg. savings</div>
+                        <div class="text-2xl font-bold tracking-tighter">47%</div>
+                    </div>
+                    <button onclick="document.getElementById('deals-section').scrollIntoView({ behavior: 'smooth' })" 
+                            class="px-6 py-3 bg-white text-sky-700 hover:bg-sky-50 transition font-bold rounded-3xl text-sm flex items-center gap-x-2">
+                        <span>Browse All Deals</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-screen-xl mx-auto px-4 pt-6 pb-12">
+        <div class="flex flex-col lg:flex-row gap-6">
+            
+            <!-- Sidebar -->
+            <div class="lg:w-64 flex-shrink-0">
+                <!-- Filters -->
+                <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 mb-5">
+                    <div class="font-bold text-sm mb-3 flex items-center gap-x-2">
+                        <i class="fas fa-filter text-sky-600"></i>
+                        <span>FILTER DEALS</span>
+                    </div>
+                    
+                    <div class="space-y-1 text-sm">
+                        <div onclick="filterByCategory('all')" class="category-filter active flex items-center justify-between px-3 py-2 rounded-2xl bg-sky-50 text-sky-700 font-medium cursor-pointer" data-category="all">
+                            <span>All Deals</span>
+                            <span class="text-xs bg-sky-100 px-2 rounded">1,284</span>
+                        </div>
+                        <div onclick="filterByCategory('tech')" class="category-filter flex items-center justify-between px-3 py-2 rounded-2xl hover:bg-slate-50 cursor-pointer" data-category="tech">
+                            <span>Tech &amp; Electronics</span>
+                            <span class="text-xs bg-slate-200 px-2 rounded">412</span>
+                        </div>
+                        <div onclick="filterByCategory('home')" class="category-filter flex items-center justify-between px-3 py-2 rounded-2xl hover:bg-slate-50 cursor-pointer" data-category="home">
+                            <span>Home &amp; Kitchen</span>
+                            <span class="text-xs bg-slate-200 px-2 rounded">289</span>
+                        </div>
+                        <div onclick="filterByCategory('fashion')" class="category-filter flex items-center justify-between px-3 py-2 rounded-2xl hover:bg-slate-50 cursor-pointer" data-category="fashion">
+                            <span>Fashion &amp; Apparel</span>
+                            <span class="text-xs bg-slate-200 px-2 rounded">167</span>
+                        </div>
+                        <div onclick="filterByCategory('gaming')" class="category-filter flex items-center justify-between px-3 py-2 rounded-2xl hover:bg-slate-50 cursor-pointer" data-category="gaming">
+                            <span>Gaming</span>
+                            <span class="text-xs bg-slate-200 px-2 rounded">94</span>
+                        </div>
+                        <div onclick="filterByCategory('auto')" class="category-filter flex items-center justify-between px-3 py-2 rounded-2xl hover:bg-slate-50 cursor-pointer" data-category="auto">
+                            <span>Auto &amp; Tools</span>
+                            <span class="text-xs bg-slate-200 px-2 rounded">78</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Popular Stores -->
+                <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
+                    <div class="font-bold text-sm mb-3">POPULAR STORES</div>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center justify-between text-slate-700 hover:text-sky-700 cursor-pointer" onclick="filterByStore('Amazon')"><span><i class="fab fa-amazon mr-2"></i> Amazon</span> <span class="text-xs">312</span></div>
+                        <div class="flex items-center justify-between text-slate-700 hover:text-sky-700 cursor-pointer" onclick="filterByStore('Best Buy')"><span>Best Buy</span> <span class="text-xs">98</span></div>
+                        <div class="flex items-center justify-between text-slate-700 hover:text-sky-700 cursor-pointer" onclick="filterByStore('Walmart')"><span>Walmart</span> <span class="text-xs">156</span></div>
+                        <div class="flex items-center justify-between text-slate-700 hover:text-sky-700 cursor-pointer" onclick="filterByStore('Target')"><span>Target</span> <span class="text-xs">74</span></div>
+                        <div class="flex items-center justify-between text-slate-700 hover:text-sky-700 cursor-pointer" onclick="filterByStore('Home Depot')"><span>Home Depot</span> <span class="text-xs">61</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Deals Area -->
+            <div class="flex-1" id="deals-section">
+                <!-- Tabs -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-x-1 bg-white rounded-2xl p-1 border border-slate-200 shadow-sm">
+                        <button onclick="filterByTab('all')" class="tab-button active px-5 py-1.5 text-sm font-semibold rounded-[14px] bg-sky-600 text-white">All Hot Deals</button>
+                        <button onclick="filterByTab('price-drop')" class="tab-button px-5 py-1.5 text-sm font-semibold rounded-[14px] hover:bg-slate-100">Biggest Drops</button>
+                        <button onclick="filterByTab('new')" class="tab-button px-5 py-1.5 text-sm font-semibold rounded-[14px] hover:bg-slate-100">New Today</button>
+                    </div>
+                    
+                    <div class="text-xs text-slate-500 hidden md:block">
+                        Showing <span id="results-count">284</span> deals
+                    </div>
+                </div>
+
+                <!-- Deals Grid / List -->
+                <div id="deals-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Deals populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs">
+        <div class="max-w-screen-xl mx-auto px-4 py-8">
+            <div class="flex flex-col md:flex-row gap-y-4 justify-between items-center">
+                <div>© 2026 Ben's Bargains. Not affiliated with any retailer.</div>
+                <div class="flex gap-x-4">
+                    <a href="#" class="hover:text-white">About</a>
+                    <a href="#" class="hover:text-white">How it Works</a>
+                    <a href="#" class="hover:text-white">Submit a Deal</a>
+                    <a href="#" class="hover:text-white">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Deal Detail Modal -->
+    <div id="deal-modal" onclick="if (event.target.id === 'deal-modal') hideModal()" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
+        <div onclick="event.stopImmediatePropagation()" class="modal bg-white rounded-3xl max-w-lg w-full mx-4 shadow-xl overflow-hidden">
+            <div class="p-6">
+                <div class="flex justify-between items-start">
+                    <div id="modal-store" class="text-xs font-bold uppercase tracking-wider text-sky-600"></div>
+                    <button onclick="hideModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
+                </div>
+                
+                <div id="modal-title" class="text-2xl font-bold mt-2 leading-tight"></div>
+                
+                <div class="mt-4 flex items-baseline gap-x-3">
+                    <div id="modal-price" class="text-4xl font-extrabold text-emerald-600"></div>
+                    <div id="modal-original" class="text-xl line-through text-slate-400"></div>
+                    <div id="modal-discount" class="bargain-badge px-3 py-0.5 text-xs"></div>
+                </div>
+                
+                <div class="mt-5 grid grid-cols-3 gap-3 text-center text-xs">
+                    <div>
+                        <div class="font-semibold text-slate-500">Deal Score</div>
+                        <div id="modal-score" class="text-xl font-extrabold text-sky-600"></div>
+                    </div>
+                    <div>
+                        <div class="font-semibold text-slate-500">Votes</div>
+                        <div id="modal-votes" class="text-xl font-extrabold"></div>
+                    </div>
+                    <div>
+                        <div class="font-semibold text-slate-500">Posted</div>
+                        <div id="modal-time" class="text-xl font-extrabold text-slate-700"></div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 text-sm text-slate-600" id="modal-description"></div>
+                
+                <div class="mt-6 flex gap-x-3">
+                    <button onclick="goToDeal()" 
+                            class="flex-1 bg-sky-600 hover:bg-sky-700 transition text-white font-extrabold py-3.5 rounded-2xl text-sm flex items-center justify-center gap-x-2">
+                        <span>VIEW DEAL ON STORE</span> <i class="fas fa-external-link-alt"></i>
+                    </button>
+                    <button onclick="upvoteFromModal()" 
+                            class="px-5 flex items-center justify-center gap-x-2 border border-slate-300 hover:bg-slate-100 rounded-2xl font-semibold text-sm">
+                        <i class="fas fa-thumbs-up"></i> 
+                        <span id="modal-upvote-count"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Deal Modal -->
+    <div id="submit-modal" onclick="if (event.target.id === 'submit-modal') hideSubmitModal()" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[110]">
+        <div onclick="event.stopImmediatePropagation()" class="bg-white rounded-3xl max-w-md w-full mx-4 p-6 shadow-xl">
+            <div class="flex justify-between items-center mb-4">
+                <div class="font-bold text-xl">Submit a New Deal</div>
+                <button onclick="hideSubmitModal()" class="text-2xl text-slate-400 hover:text-slate-500">&times;</button>
+            </div>
+            
+            <form id="submit-form" onsubmit="submitNewDeal(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs font-semibold text-slate-500 block mb-1">PRODUCT NAME</label>
+                        <input type="text" id="submit-title" required class="w-full border border-slate-300 rounded-2xl px-4 py-2.5 text-sm" placeholder="Sony WH-1000XM5 Headphones">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs font-semibold text-slate-500 block mb-1">CURRENT PRICE</label>
+                            <input type="text" id="submit-price" required class="w-full border border-slate-300 rounded-2xl px-4 py-2.5 text-sm" placeholder="$298">
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-slate-500 block mb-1">ORIGINAL PRICE</label>
+                            <input type="text" id="submit-original" class="w-full border border-slate-300 rounded-2xl px-4 py-2.5 text-sm" placeholder="$398">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs font-semibold text-slate-500 block mb-1">STORE</label>
+                            <select id="submit-store" class="w-full border border-slate-300 rounded-2xl px-4 py-2.5 text-sm">
+                                <option>Amazon</option>
+                                <option>Best Buy</option>
+                                <option>Walmart</option>
+                                <option>Target</option>
+                                <option>Home Depot</option>
+                                <option>Apple</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-slate-500 block mb-1">CATEGORY</label>
+                            <select id="submit-category" class="w-full border border-slate-300 rounded-2xl px-4 py-2.5 text-sm">
+                                <option value="tech">Tech &amp; Electronics</option>
+                                <option value="home">Home &amp; Kitchen</option>
+                                <option value="fashion">Fashion &amp; Apparel</option>
+                                <option value="gaming">Gaming</option>
+                                <option value="auto">Auto &amp; Tools</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="text-xs font-semibold text-slate-500 block mb-1">DEAL LINK (optional)</label>
+                        <input type="url" id="submit-link" class="w-full border border-slate-300 rounded-2xl px-4 py-2.5 text-sm" placeholder="https://amazon.com/...">
+                    </div>
+                </div>
+                
+                <div class="mt-6 flex gap-3">
+                    <button type="button" onclick="hideSubmitModal()" class="flex-1 py-3 rounded-2xl border text-sm font-semibold">Cancel</button>
+                    <button type="submit" class="flex-1 py-3 bg-sky-600 text-white rounded-2xl text-sm font-extrabold">Submit to Ben's</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Tailwind script
+        function initializeTailwind() {
+            // Already loaded via CDN
+        }
+
+        let deals = [
+            {
+                id: 1,
+                title: "Sony WH-1000XM5 Wireless Headphones",
+                price: "$298",
+                original: "$398",
+                store: "Amazon",
+                category: "tech",
+                discount: "25%",
+                score: 94,
+                votes: 1243,
+                time: "2h ago",
+                description: "Industry-leading noise cancelling with 30hr battery. Currently the lowest price ever seen.",
+                link: "https://amazon.com"
+            },
+            {
+                id: 2,
+                title: "Dyson V15 Detect Cordless Vacuum",
+                price: "$449",
+                original: "$699",
+                store: "Best Buy",
+                category: "home",
+                discount: "36%",
+                score: 89,
+                votes: 872,
+                time: "4h ago",
+                description: "Laser dust detection + powerful suction. Includes all attachments.",
+                link: "https://bestbuy.com"
+            },
+            {
+                id: 3,
+                title: "Apple AirPods Pro 2 (USB-C)",
+                price: "$189",
+                original: "$249",
+                store: "Amazon",
+                category: "tech",
+                discount: "24%",
+                score: 91,
+                votes: 2156,
+                time: "7h ago",
+                description: "Active Noise Cancellation and Transparency mode. Spatial Audio.",
+                link: "https://amazon.com"
+            },
+            {
+                id: 4,
+                title: "Instant Pot Duo 7-in-1 Pressure Cooker",
+                price: "$69",
+                original: "$99",
+                store: "Walmart",
+                category: "home",
+                discount: "30%",
+                score: 85,
+                votes: 634,
+                time: "9h ago",
+                description: "7 functions in 1: pressure cook, slow cook, rice cooker + more.",
+                link: "https://walmart.com"
+            },
+            {
+                id: 5,
+                title: "Samsung 55" QLED 4K TV (Q60D)",
+                price: "$447",
+                original: "$647",
+                store: "Best Buy",
+                category: "tech",
+                discount: "31%",
+                score: 82,
+                votes: 418,
+                time: "12h ago",
+                description: "Quantum Processor + HDR. Excellent for movies and gaming.",
+                link: "https://bestbuy.com"
+            },
+            {
+                id: 6,
+                title: "Levi's 501 Original Jeans (Men)",
+                price: "$39",
+                original: "$69",
+                store: "Amazon",
+                category: "fashion",
+                discount: "43%",
+                score: 78,
+                votes: 291,
+                time: "1d ago",
+                description: "Classic straight fit. Multiple washes available.",
+                link: "https://amazon.com"
+            },
+            {
+                id: 7,
+                title: "Nintendo Switch OLED Model",
+                price: "$299",
+                original: "$349",
+                store: "Target",
+                category: "gaming",
+                discount: "14%",
+                score: 88,
+                votes: 967,
+                time: "1d ago",
+                description: "7-inch OLED screen. Includes Joy-Con controllers.",
+                link: "https://target.com"
+            },
+            {
+                id: 8,
+                title: "DeWalt 20V MAX Cordless Drill Kit",
+                price: "$89",
+                original: "$149",
+                store: "Home Depot",
+                category: "auto",
+                discount: "40%",
+                score: 93,
+                votes: 512,
+                time: "18h ago",
+                description: "Includes 2 batteries + charger. 20V MAX platform.",
+                link: "https://homedepot.com"
+            },
+            {
+                id: 9,
+                title: "Bose QuietComfort Ultra Headphones",
+                price: "$329",
+                original: "$429",
+                store: "Best Buy",
+                category: "tech",
+                discount: "23%",
+                score: 87,
+                votes: 389,
+                time: "22h ago",
+                description: "Immersive audio with noise cancelling. 24hr battery life.",
+                link: "https://bestbuy.com"
+            },
+            {
+                id: 10,
+                title: "All-Clad D3 Stainless Steel 10-Piece Cookware Set",
+                price: "$399",
+                original: "$799",
+                store: "Williams Sonoma",
+                category: "home",
+                discount: "50%",
+                score: 76,
+                votes: 203,
+                time: "2d ago",
+                description: "Professional grade 3-ply stainless. Lifetime warranty.",
+                link: "#"
+            },
+            {
+                id: 11,
+                title: "Meta Quest 3 512GB VR Headset",
+                price: "$429",
+                original: "$549",
+                store: "Amazon",
+                category: "gaming",
+                discount: "22%",
+                score: 84,
+                votes: 671,
+                time: "5h ago",
+                description: "Mixed reality headset. Includes controllers and elite strap.",
+                link: "https://amazon.com"
+            },
+            {
+                id: 12,
+                title: "Patagonia Nano Puff Jacket (Men's)",
+                price: "$119",
+                original: "$179",
+                store: "Patagonia",
+                category: "fashion",
+                discount: "34%",
+                score: 81,
+                votes: 157,
+                time: "1d ago",
+                description: "Lightweight insulated jacket. Recycled materials.",
+                link: "#"
+            }
+        ];
+
+        let currentFilter = 'all';
+        let currentTab = 'all';
+        let currentStoreFilter = null;
+
+        function renderDeals(filteredDeals) {
+            const container = document.getElementById('deals-container');
+            container.innerHTML = '';
+            
+            if (filteredDeals.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-8 text-slate-500">No deals match your filters.</div>';
+                return;
+            }
+
+            filteredDeals.forEach(deal => {
+                const discount = deal.original ? 
+                    Math.round((parseFloat(deal.original.replace('$','')) - parseFloat(deal.price.replace('$',''))) / parseFloat(deal.original.replace('$','')) * 100) : 
+                    parseInt(deal.discount);
+                
+                const card = document.createElement('div');
+                card.className = 'deal-card bg-white border border-slate-200 rounded-3xl p-5 cursor-pointer flex flex-col';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-x-2">
+                                <span class="font-bold text-lg">${deal.store}</span>
+                                <span class="bargain-badge text-[10px] px-2">${deal.discount}</span>
+                            </div>
+                            <div class="text-sm text-slate-500 mt-0.5">${deal.time}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="price text-2xl font-extrabold text-emerald-600">${deal.price}</div>
+                            ${deal.original ? `<div class="text-xs line-through text-slate-400">${deal.original}</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 font-semibold leading-tight flex-1">${deal.title}</div>
+                    
+                    <div class="mt-auto pt-4 flex items-center justify-between">
+                        <div class="flex items-center gap-x-2">
+                            <div class="flex items-center text-xs bg-sky-50 text-sky-700 px-2.5 py-1 rounded-2xl font-bold">
+                                <i class="fas fa-fire mr-1"></i> 
+                                <span>${deal.score}</span>
+                            </div>
+                            <div onclick="event.stopImmediatePropagation(); upvoteDeal(${deal.id}, this)" class="flex items-center gap-x-1 text-xs px-2 py-1 hover:bg-slate-100 rounded-2xl cursor-pointer">
+                                <i class="fas fa-thumbs-up text-sky-600"></i>
+                                <span class="vote-count font-semibold">${deal.votes}</span>
+                            </div>
+                        </div>
+                        
+                        <button onclick="event.stopImmediatePropagation(); showDealModal(${deal.id})" 
+                                class="text-xs px-3.5 py-1.5 bg-slate-900 hover:bg-black transition text-white rounded-2xl font-semibold text-center">
+                            View Deal
+                        </button>
+                    </div>
+                `;
+                
+                card.onclick = () => showDealModal(deal.id);
+                container.appendChild(card);
+            });
+            
+            document.getElementById('results-count').textContent = filteredDeals.length;
+        }
+
+        function filterDeals() {
+            let filtered = [...deals];
+            
+            // Category filter
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(d => d.category === currentFilter);
+            }
+            
+            // Store filter
+            if (currentStoreFilter) {
+                filtered = filtered.filter(d => d.store.toLowerCase().includes(currentStoreFilter.toLowerCase()));
+            }
+            
+            // Tab filter
+            if (currentTab === 'price-drop') {
+                filtered = filtered.filter(d => d.discount && parseInt(d.discount) > 30);
+            } else if (currentTab === 'new') {
+                filtered = filtered.filter(d => d.time.includes('h') && parseInt(d.time) < 12);
+            }
+            
+            // Search
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            if (searchTerm) {
+                filtered = filtered.filter(d => 
+                    d.title.toLowerCase().includes(searchTerm) || 
+                    d.store.toLowerCase().includes(searchTerm) ||
+                    (d.description && d.description.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            renderDeals(filtered);
+        }
+
+        function filterByCategory(category) {
+            currentFilter = category;
+            
+            // Update active styles
+            document.querySelectorAll('.category-filter').forEach(el => {
+                if (el.dataset.category === category) {
+                    el.classList.add('bg-sky-50', 'text-sky-700', 'font-medium');
+                    el.classList.remove('hover:bg-slate-50');
+                } else {
+                    el.classList.remove('bg-sky-50', 'text-sky-700', 'font-medium');
+                    el.classList.add('hover:bg-slate-50');
+                }
+            });
+            
+            filterDeals();
+        }
+
+        function filterByStore(store) {
+            currentStoreFilter = store;
+            currentFilter = 'all';
+            filterDeals();
+            
+            // Reset category active
+            document.querySelectorAll('.category-filter').forEach(el => el.classList.remove('bg-sky-50', 'text-sky-700', 'font-medium'));
+        }
+
+        function filterByTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(tab === 'all' ? 'all' : tab === 'price-drop' ? 'drop' : 'new')) {
+                    btn.classList.add('active', 'bg-sky-600', 'text-white');
+                    btn.classList.remove('hover:bg-slate-100');
+                } else {
+                    btn.classList.remove('active', 'bg-sky-600', 'text-white');
+                    btn.classList.add('hover:bg-slate-100');
+                }
+            });
+            
+            filterDeals();
+        }
+
+        let selectedDealId = null;
+
+        function showDealModal(id) {
+            const deal = deals.find(d => d.id === id);
+            if (!deal) return;
+            
+            selectedDealId = id;
+            
+            document.getElementById('modal-store').textContent = deal.store;
+            document.getElementById('modal-title').textContent = deal.title;
+            document.getElementById('modal-price').textContent = deal.price;
+            document.getElementById('modal-original').textContent = deal.original || '';
+            document.getElementById('modal-discount').textContent = deal.discount;
+            document.getElementById('modal-score').textContent = deal.score;
+            document.getElementById('modal-votes').textContent = deal.votes.toLocaleString();
+            document.getElementById('modal-time').textContent = deal.time;
+            document.getElementById('modal-description').textContent = deal.description || 'Great price on a popular item. Limited time offer.';
+            document.getElementById('modal-upvote-count').textContent = deal.votes.toLocaleString();
+            
+            document.getElementById('deal-modal').classList.remove('hidden');
+            document.getElementById('deal-modal').classList.add('flex');
+        }
+
+        function hideModal() {
+            const modal = document.getElementById('deal-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        function upvoteFromModal() {
+            if (!selectedDealId) return;
+            const deal = deals.find(d => d.id === selectedDealId);
+            if (!deal) return;
+            
+            deal.votes++;
+            
+            // Update modal
+            document.getElementById('modal-votes').textContent = deal.votes.toLocaleString();
+            document.getElementById('modal-upvote-count').textContent = deal.votes.toLocaleString();
+            
+            // Re-render main list
+            filterDeals();
+        }
+
+        function upvoteDeal(id, element) {
+            const deal = deals.find(d => d.id === id);
+            if (!deal) return;
+            
+            deal.votes++;
+            
+            // Update the count in the card
+            const countEl = element.querySelector('.vote-count');
+            if (countEl) countEl.textContent = deal.votes;
+            
+            // If modal open for this deal, update it too
+            if (selectedDealId === id) {
+                document.getElementById('modal-votes').textContent = deal.votes.toLocaleString();
+                document.getElementById('modal-upvote-count').textContent = deal.votes.toLocaleString();
+            }
+        }
+
+        function goToDeal() {
+            const deal = deals.find(d => d.id === selectedDealId);
+            if (deal && deal.link && deal.link !== '#') {
+                window.open(deal.link, '_blank');
+            } else {
+                alert('Simulated: Opening store page for ' + (deal ? deal.title : 'deal'));
+            }
+            hideModal();
+        }
+
+        function showSubmitModal() {
+            document.getElementById('submit-modal').classList.remove('hidden');
+            document.getElementById('submit-modal').classList.add('flex');
+        }
+
+        function hideSubmitModal() {
+            const modal = document.getElementById('submit-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            document.getElementById('submit-form').reset();
+        }
+
+        function submitNewDeal(e) {
+            e.preventDefault();
+            
+            const newDeal = {
+                id: Date.now(),
+                title: document.getElementById('submit-title').value,
+                price: document.getElementById('submit-price').value,
+                original: document.getElementById('submit-original').value || null,
+                store: document.getElementById('submit-store').value,
+                category: document.getElementById('submit-category').value,
+                discount: 'NEW',
+                score: Math.floor(Math.random() * 20) + 70,
+                votes: Math.floor(Math.random() * 50) + 10,
+                time: 'Just now',
+                description: 'User-submitted deal. Please verify before purchasing.',
+                link: document.getElementById('submit-link').value || '#'
+            };
+            
+            deals.unshift(newDeal);
+            
+            hideSubmitModal();
+            
+            // Refresh view
+            currentFilter = 'all';
+            currentTab = 'all';
+            currentStoreFilter = null;
+            
+            // Reset filters visually
+            document.querySelectorAll('.category-filter').forEach(el => el.classList.remove('bg-sky-50', 'text-sky-700', 'font-medium'));
+            document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active', 'bg-sky-600', 'text-white'));
+            
+            filterDeals();
+            
+            // Show confirmation
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-4 right-4 bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-lg text-sm flex items-center gap-x-2';
+            toast.innerHTML = `<i class="fas fa-check-circle"></i> <span>Deal submitted! Thanks for contributing.</span>`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.transition = 'all 0.3s';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2800);
+        }
+
+        // Search handler
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', () => {
+                filterDeals();
+            });
+            
+            // Bonus: Enter key focuses results
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('deals-section').scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+
+        function initializeDeals() {
+            // Initial render
+            renderDeals(deals);
+            
+            // Set initial active category
+            const allFilter = document.querySelector('.category-filter[data-category="all"]');
+            if (allFilter) {
+                allFilter.classList.add('bg-sky-50', 'text-sky-700', 'font-medium');
+            }
+            
+            // Set initial active tab
+            const firstTab = document.querySelector('.tab-button');
+            if (firstTab) firstTab.classList.add('active', 'bg-sky-600', 'text-white');
+            
+            setupSearch();
+            
+            // Demo: Random upvote simulation every 40s (fun touch)
+            setInterval(() => {
+                if (Math.random() > 0.7 && deals.length > 0) {
+                    const randomDeal = deals[Math.floor(Math.random() * deals.length)];
+                    randomDeal.votes += Math.floor(Math.random() * 3) + 1;
+                    
+                    // Refresh if user is on the page
+                    const container = document.getElementById('deals-container');
+                    if (container) {
+                        filterDeals();
+                    }
+                }
+            }, 40000);
+            
+            // Initial count
+            document.getElementById('results-count').textContent = deals.length;
+        }
+
+        // Boot the app
+        function initApp() {
+            initializeTailwind();
+            initializeDeals();
+            
+            // Keyboard shortcut hint
+            document.addEventListener('keydown', function(e) {
+                if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+                    e.preventDefault();
+                    document.getElementById('search-input').focus();
+                }
+            });
+            
+            console.log('%c[Ben\'s Bargains Clone] Interactive clone ready. Different URL from Slickdeals.', 'color:#64748b');
+        }
+
+        // Start everything
+        window.onload = initApp;
+    </script>
+</body>
+</html>
